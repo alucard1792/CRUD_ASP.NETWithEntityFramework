@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -23,7 +24,11 @@ namespace CRUDEF.Controllers
         // GET: Customer/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            using (DbModels dbModels = new DbModels())
+            {
+            return View(dbModels.Customers.Where(x => x.Id == id).First());
+
+            }
         }
 
         // GET: Customer/Create
@@ -34,11 +39,15 @@ namespace CRUDEF.Controllers
 
         // POST: Customer/Create
         [HttpPost]
-        public ActionResult Create(FormCollection collection)
+        public ActionResult Create(Customer customer)
         {
             try
             {
-                // TODO: Add insert logic here
+                using (DbModels dbModel = new DbModels())
+                {
+                    dbModel.Customers.Add(customer);
+                    dbModel.SaveChanges();
+                }
 
                 return RedirectToAction("Index");
             }
@@ -51,18 +60,28 @@ namespace CRUDEF.Controllers
         // GET: Customer/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            using (DbModels dbModels = new DbModels())
+            {
+                return View(dbModels.Customers.Where(x => x.Id == id).First());
+
+            }
+
         }
 
         // POST: Customer/Edit/5
         [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
+        public ActionResult Edit(Customer customer)
         {
             try
             {
-                // TODO: Add update logic here
+                using (DbModels dbModels = new DbModels())
+                {
+                    dbModels.Entry(customer).State = EntityState.Modified;
+                    dbModels.SaveChanges();
+                    return RedirectToAction("Index");
 
-                return RedirectToAction("Index");
+                }
+
             }
             catch
             {
@@ -73,7 +92,12 @@ namespace CRUDEF.Controllers
         // GET: Customer/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            //copiado de edit()
+            using (DbModels dbModels = new DbModels())
+            {
+                return View(dbModels.Customers.Where(x => x.Id == id).First());
+
+            }
         }
 
         // POST: Customer/Delete/5
@@ -82,7 +106,12 @@ namespace CRUDEF.Controllers
         {
             try
             {
-                // TODO: Add delete logic here
+                using (DbModels dbModels = new DbModels())
+                {
+                    Customer customer = dbModels.Customers.Where(x => x.Id == id).First();
+                    dbModels.Customers.Remove(customer);
+                    dbModels.SaveChanges();
+                }
 
                 return RedirectToAction("Index");
             }
